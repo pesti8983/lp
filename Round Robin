@@ -1,0 +1,55 @@
+import java.util.*;
+
+public class RoundRobin {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+
+        int[] burst = new int[n];
+        int[] remaining = new int[n];
+        int[] waiting = new int[n];
+        int[] turnaround = new int[n];
+
+        System.out.print("Enter Time Quantum: ");
+        int tq = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Burst Time for P" + (i + 1) + ": ");
+            burst[i] = sc.nextInt();
+            remaining[i] = burst[i];
+        }
+
+        int time = 0, completed = 0;
+        Queue<Integer> q = new LinkedList<>();
+
+        for (int i = 0; i < n; i++) q.add(i);
+
+        while (!q.isEmpty()) {
+            int i = q.poll();
+            if (remaining[i] > tq) {
+                time += tq;
+                remaining[i] -= tq;
+                q.add(i);
+            } else {
+                time += remaining[i];
+                remaining[i] = 0;
+                turnaround[i] = time;
+                waiting[i] = turnaround[i] - burst[i];
+                completed++;
+            }
+        }
+
+        float totalWT = 0, totalTAT = 0;
+        System.out.println("\nProcess\tBurst\tWaiting\tTurnaround");
+        for (int i = 0; i < n; i++) {
+            totalWT += waiting[i];
+            totalTAT += turnaround[i];
+            System.out.println("P" + (i + 1) + "\t" + burst[i] + "\t" + waiting[i] + "\t" + turnaround[i]);
+        }
+
+        System.out.printf("\nAverage Waiting Time: %.2f", totalWT / n);
+        System.out.printf("\nAverage Turnaround Time: %.2f\n", totalTAT / n);
+    }
+}
