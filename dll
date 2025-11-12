@@ -1,0 +1,41 @@
+// MathLibrary.h
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int add(int a, int b);
+int subtract(int a, int b);
+
+#ifdef __cplusplus
+}
+#endif
+
+
+
+// MathLibrary.cpp
+#include "MathLibrary.h"
+
+int add(int a, int b) {
+return a + b;
+
+}
+
+int subtract(int a, int b) {
+return a - b;
+}
+
+#include <iostream>
+#include "MathLibrary.h"
+
+int main() {
+std::cout << "Add: " << add(4, 2) << std::endl;
+std::cout << "Subtract: " << subtract(4, 2) << std::endl;
+return 0;
+}
+
+g++ -fPIC -c MathLibrary.cpp -o MathLibrary.o
+g++ -shared -o libmath.so MathLibrary.o
+g++ main.cpp -L. -lmath -o main
+LD_LIBRARY_PATH=. ./main
