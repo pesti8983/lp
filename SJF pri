@@ -1,0 +1,67 @@
+import java.util.Scanner;
+
+public class SJF_Preemptive {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of processes: ");
+        int n = sc.nextInt();
+
+        int[] burst = new int[n];
+        int[] arrival = new int[n];
+        int[] remaining = new int[n];
+        int[] completion = new int[n];
+        int[] waiting = new int[n];
+        int[] turnaround = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.println("\nProcess " + (i + 1));
+            System.out.print("Arrival Time: ");
+            arrival[i] = sc.nextInt();
+            System.out.print("Burst Time: ");
+            burst[i] = sc.nextInt();
+            remaining[i] = burst[i];
+        }
+
+        int completed = 0, currentTime = 0;
+        while (completed != n) {
+            int minIndex = -1;
+            int minRemaining = Integer.MAX_VALUE;
+
+            for (int i = 0; i < n; i++) {
+                if (arrival[i] <= currentTime && remaining[i] > 0 && remaining[i] < minRemaining) {
+                    minRemaining = remaining[i];
+                    minIndex = i;
+                }
+            }
+
+            if (minIndex == -1) {
+                currentTime++;
+                continue;
+            }
+
+            remaining[minIndex]--;
+            currentTime++;
+
+            if (remaining[minIndex] == 0) {
+                completed++;
+                completion[minIndex] = currentTime;
+                turnaround[minIndex] = completion[minIndex] - arrival[minIndex];
+                waiting[minIndex] = turnaround[minIndex] - burst[minIndex];
+                if (waiting[minIndex] < 0) waiting[minIndex] = 0;
+            }
+        }
+
+        float totalWT = 0, totalTAT = 0;
+        System.out.println("\nProcess\tArrival\tBurst\tCompletion\tWaiting\tTurnaround");
+        for (int i = 0; i < n; i++) {
+            totalWT += waiting[i];
+            totalTAT += turnaround[i];
+            System.out.println((i + 1) + "\t" + arrival[i] + "\t" + burst[i] + "\t" +
+                    completion[i] + "\t\t" + waiting[i] + "\t" + turnaround[i]);
+        }
+
+        System.out.printf("\nAverage Waiting Time: %.2f", totalWT / n);
+        System.out.printf("\nAverage Turnaround Time: %.2f\n", totalTAT / n);
+    }
+}
